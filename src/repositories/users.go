@@ -16,14 +16,14 @@ func NewUsersRepositories(db *sql.DB) *users {
 
 // Create insert user on database
 func (repository users) Create(user models.User) (uint64, error) {
-	statement, erro := repository.db.Prepare("insert into users (name, nickname, email, password) values (?, ?, ?, ?)")
+	statement, erro := repository.db.Prepare("insert into users (name, nick, email, password) values (?, ?, ?, ?)")
 	if erro != nil {
 		return 0, erro
 	}
 
 	defer statement.Close()
 
-	result, erro := statement.Exec(user.Name, user.Nickname, user.Email, user.Password)
+	result, erro := statement.Exec(user.Name, user.Nick, user.Email, user.Password)
 	if erro != nil {
 		return 0, erro
 	}
