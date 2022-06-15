@@ -70,3 +70,23 @@ func (repository users) List(nameOrNick string) ([]models.User, error) {
 
 	return users, erro
 }
+
+func (repository users) GetById(ID uint64) (models.User, error) {
+	rows, erro := repository.db.Query("select id, name, nick, email, created_at from users where id = ?", ID)
+
+	if erro != nil {
+		return models.User{}, erro
+	}
+
+	defer rows.Close()
+
+	var user models.User
+
+	if rows.Next() {
+		if erro = rows.Scan(&user.ID, &user.Name, &user.Nick, &user.Email, &user.CreatedAt); erro != nil {
+			return models.User{}, erro
+		}
+	}
+
+	return user, nil
+}
