@@ -32,7 +32,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if erro = user.Prepare("signup"); erro != nil {
 		responses.Erro(w, http.StatusBadRequest, erro)
-
+		return
 	}
 
 	db, erro := database.Connect()

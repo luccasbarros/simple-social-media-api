@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 	"time"
+
+	"github.com/badoux/checkmail"
 )
 
 // omitempty - If field is empty then the property will be omitted
@@ -38,6 +40,10 @@ func (user *User) validate(stage string) error {
 
 	if user.Email == "" {
 		return errors.New("Email is required and cannot be empty")
+	}
+
+	if erro := checkmail.ValidateFormat(user.Email); erro != nil {
+		return errors.New("Email is invalid")
 	}
 
 	if stage == "signup" && user.Password == "" {
