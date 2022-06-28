@@ -17,8 +17,8 @@ type User struct {
 }
 
 // Prepare will call validate and formatt methods to validate and format the received user data
-func (user *User) Prepare() error {
-	if erro := user.validate(); erro != nil {
+func (user *User) Prepare(stage string) error {
+	if erro := user.validate(stage); erro != nil {
 		return erro
 	}
 
@@ -27,7 +27,7 @@ func (user *User) Prepare() error {
 	return nil
 }
 
-func (user *User) validate() error {
+func (user *User) validate(stage string) error {
 	if user.Name == "" {
 		return errors.New("Name is required and cannot be empty")
 	}
@@ -40,7 +40,7 @@ func (user *User) validate() error {
 		return errors.New("Email is required and cannot be empty")
 	}
 
-	if user.Password == "" {
+	if stage == "signup" && user.Password == "" {
 		return errors.New("Password is required and cannot be empty")
 	}
 
