@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/src/auth"
 	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
@@ -120,6 +121,17 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tokenUserId, erro := auth.GetUserId(r)
+	if erro != nil {
+		responses.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	if userId != tokenUserId {
+		responses.Erro(w, http.StatusForbidden, errors.New("This is not your user"))
+		return
+	}
+
 	requestBody, erro := ioutil.ReadAll(r.Body)
 	if erro != nil {
 		responses.Erro(w, http.StatusUnprocessableEntity, erro)
@@ -160,6 +172,16 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userId, erro := strconv.ParseUint(params["id"], 10, 64)
 	if erro != nil {
 		responses.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	tokenUserId, erro := auth.GetUserId(r)
+	if erro != nil {
+		responses.Erro(w, http.StatusUnauthorized, erro)
+	}
+
+	if userId != tokenUserId {
+		responses.Erro(w, http.StatusForbidden, errors.New("It's not possible delete an user that's not yours"))
 		return
 	}
 
