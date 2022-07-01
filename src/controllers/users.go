@@ -201,3 +201,78 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, http.StatusNoContent, nil)
 }
+
+//FollowUser
+func FollowUser(w http.ResponseWriter, r *http.Request) {
+	followerId, erro := auth.GetUserId(r)
+	if erro != nil {
+		responses.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	params := mux.Vars(r)
+	userId, erro := strconv.ParseUint(params["id"], 10, 64)
+	if erro != nil {
+		responses.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if followerId == userId {
+		responses.Erro(w, http.StatusForbidden, errors.New("It's not possible follow yourself"))
+		return
+	}
+
+	db, erro := database.Connect()
+	if erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	defer db.Close()
+
+	repository := repositories.NewUsersRepositories(db)
+	if erro = repository.Follow(userId, followerId); erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+
+}
+
+func UnfollowUser(w http.ResponseWriter, r *http.Request) {
+	followerId, erro := auth.GetUserId(r)
+	if erro != nil {
+		responses.Erro(w, http.StatusUnauthorized, erro)
+		return
+	}
+
+	params := mux.Vars(r)
+	userId, erro := strconv.ParseUint(params["id"], 10, 64)
+	if erro != nil {
+		responses.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	if followerId == userId {
+		responses.Erro(w, http.StatusForbidden, errors.New("It's not possible unfollow yourself"))
+		return
+	}
+
+	db, erro := database.Connect()
+	if erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	defer db.Close()
+
+	repository := repositories.NewUsersRepositories(db)
+	if erro = repository.Unfollow(userId, followerId); erro != nil {
+		responses.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
+
+}
