@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS devbook;
 USE devbook;
 
+DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS followers;
 
@@ -24,3 +25,16 @@ CREATE TABLE followers (
 
   primary key (user_id, follower_id)
   ) ENGINE=InnoDB;
+
+CREATE TABLE posts(
+  id int auto_increment primary key,
+  title varchar(50) NOT NULL,
+  content varchar(50) NOT NULL,
+
+  author_id int not null,
+  FOREIGN KEY (author_id) REFERENCES users(id)
+  ON DELETE CASCADE,
+
+  likes int default 0,
+  created_at timestamp default CURRENT_TIMESTAMP
+) ENGINE=INNODB;
