@@ -1,6 +1,9 @@
 package routes
 
-import "net/http"
+import (
+	"api/src/controllers"
+	"net/http"
+)
 
 var postsRoutes = []Route{
 	{
