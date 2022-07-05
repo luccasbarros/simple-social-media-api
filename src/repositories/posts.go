@@ -99,3 +99,18 @@ func (repository Posts) GetPersonalPosts(userID uint64) ([]models.Post, error) {
 	return posts, nil
 
 }
+
+func (repository Posts) Update(postID uint64, post models.Post) error {
+	statement, erro := repository.db.Prepare("update posts set title = ?, content = ? where id = ?")
+	if erro != nil {
+		return erro
+	}
+
+	defer statement.Close()
+
+	if _, erro := statement.Exec(post.Title, post.Content, postID); erro != nil {
+		return erro
+	}
+
+	return nil
+}
